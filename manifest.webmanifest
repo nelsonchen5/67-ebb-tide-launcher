@@ -2,7 +2,7 @@
   "name": "67 Ebb Tide",
   "short_name": "67 Ebb Tide",
   "start_url": "./index.html",
-  "display": "browser",
+  "display": "standalone",
   "background_color": "#FFF2F7",
   "theme_color": "#FFF2F7",
   "icons": [
