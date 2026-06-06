@@ -19,40 +19,84 @@
   <meta name="theme-color" content="#F3F4F6">
 
   <!-- Redirect to the live Google Apps Script web app.
-       The home-screen icon is captured from THIS page at add-time,
-       so launching it still shows the My Melody icon even though the
-       app itself is hosted on script.google.com. -->
-  <meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec">
+       The home-screen icon is captured from THIS page at add-time, so the
+       launched icon shows the My Melody artwork even though the app itself
+       is hosted on script.google.com.
+
+       Two behaviours, decided in JS below:
+       - Normal:  redirect to /exec, forwarding any ?who= (and #hash).
+       - Setup:   if the URL has "setup" AND we're in a browser tab (not the
+                  installed icon), pause and show Add-to-Home-Screen steps so
+                  you can actually grab the icon before it redirects. -->
   <script>
-    // JS redirect as the primary path; the meta refresh is a no-JS fallback.
-    // Forward any query string (and #hash) so a per-person launcher works:
-    //   .../67-ebb-tide-launcher/?who=nelson  ->  .../exec?who=nelson
-    // The bare URL still lands on the in-app name picker.
     (function () {
       var base = "https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec";
-      location.replace(base + location.search + location.hash);
+      var standalone = (navigator.standalone === true) ||
+        (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+      var params = new URLSearchParams(location.search);
+      var wantSetup = params.has('setup') || /(^|[#&])setup\b/.test(location.hash);
+
+      // Pause for Add-to-Home-Screen only in a real browser tab, never from
+      // the installed icon (so the saved "...&setup" icon still opens the app).
+      if (wantSetup && !standalone) {
+        document.documentElement.setAttribute('data-setup', '1');
+        return;
+      }
+      params.delete('setup');
+      var qs = params.toString();
+      location.replace(base + (qs ? '?' + qs : '') + location.hash.replace(/setup\b&?/, ''));
     })();
   </script>
 
   <style>
     html,body{height:100%;margin:0}
     body{
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:16px;background:#F3F4F6;color:#111827;
+      box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:14px;padding:28px;text-align:center;background:#F3F4F6;color:#111827;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     }
-    img{width:96px;height:96px;border-radius:22px;box-shadow:0 6px 20px rgba(0,0,0,.15)}
-    a{color:#6B7280}
+    img{width:104px;height:104px;border-radius:24px;box-shadow:0 6px 20px rgba(0,0,0,.15)}
+    a{color:#2563EB;font-weight:600;text-decoration:none}
+    h1{font-size:20px;margin:6px 0 0}
+    /* Setup panel: hidden by default, shown when JS sets data-setup */
+    #setup{display:none;max-width:340px}
+    #setup ol{text-align:left;line-height:1.7;padding-left:22px;margin:10px 0 0}
+    #setup .share{font-weight:700}
+    html[data-setup] #setup{display:block}
+    html[data-setup] #opening{display:none}
   </style>
 </head>
 <body>
   <img src="icon-192.png" alt="67 Ebb Tide">
-  <div>Opening 67 Ebb Tide…</div>
+
+  <div id="opening">Opening 67 Ebb Tide…</div>
+
+  <div id="setup">
+    <h1>Add to Home Screen</h1>
+    <ol>
+      <li>Tap the <span class="share">Share</span> button (the square with an arrow&nbsp;↑) at the bottom of Safari.</li>
+      <li>Scroll down and choose <b>Add to Home&nbsp;Screen</b>.</li>
+      <li>Tap <b>Add</b>. The new icon opens straight to this profile.</li>
+    </ol>
+    <p><a id="open-now" href="#">Or open it now &rarr;</a></p>
+  </div>
+
   <a id="go" href="https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec">Tap here if it doesn't open</a>
+
   <script>
-    // Keep the manual-tap fallback in sync with any forwarded ?who=.
-    var go = document.getElementById('go');
-    if (go) go.href = go.href + location.search + location.hash;
+    // Build the real app URL (forward ?who=, drop the setup flag) for the
+    // manual fallback links shown in setup mode / if the redirect is blocked.
+    (function () {
+      var base = "https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec";
+      var params = new URLSearchParams(location.search);
+      params.delete('setup');
+      var qs = params.toString();
+      var appUrl = base + (qs ? '?' + qs : '');
+      var go = document.getElementById('go');
+      var openNow = document.getElementById('open-now');
+      if (go) go.href = appUrl;
+      if (openNow) openNow.href = appUrl;
+    })();
   </script>
 </body>
 </html>
