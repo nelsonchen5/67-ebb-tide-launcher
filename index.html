@@ -8,66 +8,48 @@
   <!-- Home-screen icon (real https URL — the only way an Apps Script app
        gets a custom My Melody icon). NO <link rel="manifest"> on purpose:
        a manifest start_url can override the added URL on a standalone iOS
-       clip and strip ?who=. iOS gets the icon from apple-touch-icon and
-       standalone from apple-mobile-web-app-capable, so the manifest isn't
-       needed and would only break per-person ?who= links. -->
+       clip and strip ?who=. -->
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 
-  <!-- Standalone launch (matches the original the user preferred) -->
+  <!-- Standalone launch (full-screen icon, matches the original) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="67 Ebb Tide">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#FFF2F7">
 
-  <!-- ===================================================================
-       FROZEN (standalone): no auto-redirect right now, so it's easy to
-       Add to Home Screen and the icon is captured in STANDALONE mode.
-       Add the per-person URL on each phone:
-         .../?who=nelson      .../?who=katharine      (or bare = picker)
-       Once added, this page is switched back to an instant redirect that
-       forwards ?who= to the app.
-       =================================================================== -->
+  <!-- Instant redirect to the app, forwarding ?who=. (A thin Safari bar on
+       the app screen is unavoidable: the app is cross-origin on
+       script.google.com. Removing it would require hosting the UI on this
+       origin as a PWA.) JS-only so ?who= is always carried. -->
+  <script>
+    (function () {
+      var base = "https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec";
+      location.replace(base + location.search);
+    })();
+  </script>
 
   <style>
     html,body{height:100%;margin:0}
     body{
       box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:16px;padding:32px;text-align:center;background:#FFF2F7;color:#5A3D4A;
+      gap:14px;padding:32px;text-align:center;background:#FFF2F7;color:#5A3D4A;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     }
-    img{width:128px;height:128px;border-radius:30px;box-shadow:0 12px 32px rgba(226,88,138,.30)}
-    h1{font-size:22px;margin:2px 0 0;color:#E0588A}
-    .who{font-size:14px;color:#B58AA0;margin:0;min-height:18px}
-    .who b{color:#E0588A}
-    a.open{
-      display:inline-block;margin-top:4px;background:#E0588A;color:#fff;font-weight:700;
-      text-decoration:none;padding:13px 26px;border-radius:999px;font-size:16px;
-      box-shadow:0 8px 18px rgba(226,88,138,.35);
-    }
-    a.open:active{transform:translateY(1px)}
-    .hint{color:#C9A5B6;font-size:13px;max-width:300px;line-height:1.55;margin:8px 0 0}
+    img{width:120px;height:120px;border-radius:28px;box-shadow:0 12px 32px rgba(226,88,138,.30)}
+    p{color:#B58AA0;font-size:14px;margin:0}
+    a{color:#E0588A;font-weight:700;text-decoration:none}
   </style>
 </head>
 <body>
   <img src="icon-192.png" alt="67 Ebb Tide">
-  <h1>67 Ebb Tide</h1>
-  <p class="who" id="who"></p>
-  <a class="open" id="go" href="https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec">Open the app</a>
-  <p class="hint">Tap <b>Share</b> &#8594; <b>Add to Home&nbsp;Screen</b> to install this icon.</p>
-
+  <p>Opening 67 Ebb Tide…</p>
+  <p><a id="go" href="https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec">Tap here if it doesn't open</a></p>
   <script>
-    // Forward ?who= to the app link, and show who this icon is for.
-    (function () {
-      var params = new URLSearchParams(location.search);
-      var who = (params.get('who') || '').toLowerCase();
-      var go = document.getElementById('go');
-      if (go && location.search) go.href = go.href + location.search;
-      var label = document.getElementById('who');
-      if (label) label.innerHTML = who ? 'for <b>' + who.charAt(0).toUpperCase() + who.slice(1) + '</b>' : 'shared (pick your name in the app)';
-    })();
+    var go = document.getElementById('go');
+    if (go && location.search) go.href = go.href + location.search;
   </script>
 </body>
 </html>
