@@ -24,8 +24,14 @@
        app itself is hosted on script.google.com. -->
   <meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec">
   <script>
-    // JS redirect as the primary path; the meta refresh is a fallback.
-    location.replace("https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec");
+    // JS redirect as the primary path; the meta refresh is a no-JS fallback.
+    // Forward any query string (and #hash) so a per-person launcher works:
+    //   .../67-ebb-tide-launcher/?who=nelson  ->  .../exec?who=nelson
+    // The bare URL still lands on the in-app name picker.
+    (function () {
+      var base = "https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec";
+      location.replace(base + location.search + location.hash);
+    })();
   </script>
 
   <style>
@@ -42,6 +48,11 @@
 <body>
   <img src="icon-192.png" alt="67 Ebb Tide">
   <div>Opening 67 Ebb Tide…</div>
-  <a href="https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec">Tap here if it doesn't open</a>
+  <a id="go" href="https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec">Tap here if it doesn't open</a>
+  <script>
+    // Keep the manual-tap fallback in sync with any forwarded ?who=.
+    var go = document.getElementById('go');
+    if (go) go.href = go.href + location.search + location.hash;
+  </script>
 </body>
 </html>
