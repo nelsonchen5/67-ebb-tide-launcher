@@ -5,17 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>67 Ebb Tide</title>
 
-  <!-- Home-screen icon (real https URL — this is the only way an Apps Script
-       app can get a custom My Melody icon). -->
+  <!-- Home-screen icon (real https URL — the only way an Apps Script app
+       gets a custom My Melody icon). -->
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="apple-mobile-web-app-title" content="67 Ebb Tide">
   <meta name="theme-color" content="#FFF2F7">
-  <!-- Intentionally NOT apple-mobile-web-app-capable: standalone + a
-       cross-origin redirect is what produced the chrome-less webview.
-       Without it, the icon opens the app in normal Safari instead. -->
+
+  <!-- ===================================================================
+       FROZEN: no auto-redirect right now, so it's easy to Add to Home
+       Screen. Once the icon is added, this page is switched back to an
+       instant redirect to /exec (the saved icon needs no changes).
+       =================================================================== -->
 
   <style>
     html,body{height:100%;margin:0}
@@ -26,38 +29,19 @@
     }
     img{width:128px;height:128px;border-radius:30px;box-shadow:0 12px 32px rgba(226,88,138,.30)}
     h1{font-size:22px;margin:2px 0 0;color:#E0588A}
-    .status{color:#B58AA0;font-size:14px;margin:0}
     a.open{
       display:inline-block;margin-top:4px;background:#E0588A;color:#fff;font-weight:700;
       text-decoration:none;padding:13px 26px;border-radius:999px;font-size:16px;
       box-shadow:0 8px 18px rgba(226,88,138,.35);
     }
     a.open:active{transform:translateY(1px)}
-    .hint{color:#C9A5B6;font-size:12px;max-width:300px;line-height:1.5;margin:10px 0 0}
+    .hint{color:#B58AA0;font-size:13px;max-width:300px;line-height:1.55;margin:8px 0 0}
   </style>
 </head>
 <body>
   <img src="icon-192.png" alt="67 Ebb Tide">
   <h1>67 Ebb Tide</h1>
-  <p class="status" id="status">Opening…</p>
-  <a class="open" id="go" href="https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec">Open now</a>
-  <p class="hint">Adding to your home screen? Tap <b>Share</b> &#8594; <b>Add to Home&nbsp;Screen</b> — opening the Share sheet pauses the auto-open.</p>
-
-  <script>
-    (function () {
-      var app = document.getElementById('go').href + location.search; // forward ?who= if present
-      document.getElementById('go').href = app;
-
-      // Auto-open after a short pause so there's time to Add to Home Screen.
-      var t = setTimeout(function () { location.replace(app); }, 2200);
-
-      // Cancel the auto-open the moment the page is backgrounded — e.g. when the
-      // Share sheet opens — so adding to the home screen is never interrupted.
-      function cancel() { clearTimeout(t); var s = document.getElementById('status'); if (s) s.textContent = 'Tap “Open now” when ready'; }
-      document.addEventListener('visibilitychange', function () { if (document.hidden) cancel(); });
-      window.addEventListener('pagehide', cancel);
-      window.addEventListener('blur', cancel);
-    })();
-  </script>
+  <p class="hint">Tap <b>Share</b> &#8594; <b>Add to Home&nbsp;Screen</b> to install this icon.</p>
+  <a class="open" id="go" href="https://script.google.com/macros/s/AKfycbzyMVykT3FJ6sWojn-qtTD0YyUwOv7zjp6NQAkyvalJw7wZ_Rzb-lPFs4uJGjrCdYtx/exec">Open the app</a>
 </body>
 </html>
